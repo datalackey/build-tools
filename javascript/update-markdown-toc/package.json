@@ -1,6 +1,6 @@
 {
   "name": "@datalackey/update-readme-toc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generated Table of Contents for Mark down files using an LLM (CI-safe, prompt-driven)",
   "license": "MIT",
   "type": "module",
@@ -37,4 +37,3 @@
   },
   "homepage": "https://github.com/datalackey/update-readme-toc#readme"
 }
-
