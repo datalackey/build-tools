@@ -32,6 +32,8 @@
   "bugs": {
     "url": "https://github.com/datalackey/build-tools/issues"
   },
-  "homepage": "https://github.com/datalackey/build-tools/tree/main/javascript/update-markdown-toc"
+  "homepage": "https://github.com/datalackey/build-tools/tree/main/javascript/update-markdown-toc",
+  "dependencies": {
+    "ts-dedent": "^2.2.0"
+  }
 }
-

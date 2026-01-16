@@ -2,148 +2,242 @@
 
 import fs from "fs";
 import path from "path";
+import { parseArgs } from "node:util";
+import dedent from "ts-dedent";
+
 
 /* ============================================================
- * Argument parsing
- * ============================================================ */
-
-const args = process.argv.slice(2);
-
-let markdownPath = "README.md";
-
-if (args.length > 0 && !args[0].startsWith("-")) {
-  markdownPath = args[0];
-}
-
-markdownPath = path.resolve(process.cwd(), markdownPath);
-
-/* ============================================================
- * File existence / readability checks
- * ============================================================ */
-
-if (!fs.existsSync(markdownPath)) {
-  console.error(`ERROR: Markdown file not found: ${markdownPath}`);
-  process.exit(1);
-}
-
-let content;
-try {
-  content = fs.readFileSync(markdownPath, "utf8");
-} catch (err) {
-  console.error(`ERROR: Unable to read markdown file: ${markdownPath}`);
-  process.exit(1);
-}
-
-/* ============================================================
- * TOC delimiter detection
+ * Constants
  * ============================================================ */
 
 const START = "<!-- TOC:START -->";
 const END = "<!-- TOC:END -->";
 
-const hasStart = content.includes(START);
-const hasEnd = content.includes(END);
-
-if (!hasStart && !hasEnd) {
-  console.error("ERROR: TOC delimiters not found");
-  process.exit(1);
-}
-
-if (hasStart && !hasEnd) {
-  console.error("ERROR: TOC start delimiter found without end");
-  process.exit(1);
-}
-
-if (!hasStart && hasEnd) {
-  console.error("ERROR: TOC end delimiter found without start");
-  process.exit(1);
-}
-
 /* ============================================================
- * Split content into regions
+ * Usage / Help
  * ============================================================ */
 
-const startIndex = content.indexOf(START);
-const endIndex = content.indexOf(END);
+function printHelp() {
+    console.log(dedent`
+    update-readme-toc [options] [file]
 
-const before = content.slice(0, startIndex + START.length);
-const after = content.slice(endIndex);
-
-/*
- * IMPORTANT:
- * We must ignore everything currently inside the TOC block
- * when generating the new TOC.
- */
-
-const contentWithoutTOC =
-  content.slice(0, startIndex) +
-  content.slice(endIndex + END.length);
-
-/* ============================================================
- * Heading extraction (outside TOC only)
- * ============================================================ */
-
-const lines = contentWithoutTOC.split("\n");
-
-const headings = [];
-
-for (const line of lines) {
-  const match = /^(#{1,6})\s+(.*)$/.exec(line);
-  if (!match) continue;
-
-  const level = match[1].length;
-  const title = match[2].trim();
-
-  const anchor = title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")   // remove punctuation like &
-    .replace(/\s/g, "-")        // EACH space → hyphen
-    .replace(/^-|-$/g, "");     // trim leading/trailing hyphens
-
-  headings.push({ level, title, anchor });
+    Options:
+      --check     <path-to-file-or-folder>   Do not write files; exit non-zero if TOC is stale
+      --recursive <path-to-folder>           Recursively process all .md files under the given folder
+      -q, --quiet                            Suppress per-file output
+      -h, --help                             Show this help message and exit
+  `);
 }
 
-if (headings.length === 0) {
-  console.error("ERROR: No headings found to generate TOC");
-  process.exit(1);
-}
 
 /* ============================================================
- * TOC generation
+ * Argument parsing (Node built-in)
  * ============================================================ */
 
-const minLevel = Math.min(...headings.map(h => h.level));
-
-const tocLines = [];
-
-for (const h of headings) {
-  const indent = "  ".repeat(h.level - minLevel);
-  tocLines.push(`${indent}- [${h.title}](#${h.anchor})`);
-}
-
-const tocBlock =
-  "\n" +
-  tocLines.join("\n") +
-  "\n";
-
-/* ============================================================
- * Assemble final content
- * ============================================================ */
-
-const updated =
-  before +
-  tocBlock +
-  after;
-
-/* ============================================================
- * Write back
- * ============================================================ */
+let values, positionals;
 
 try {
-  fs.writeFileSync(markdownPath, updated, "utf8");
+    ({ values, positionals } = parseArgs({
+        options: {
+            check: { type: "boolean" },
+            recursive: { type: "string" },
+            quiet: { type: "boolean", short: "q" },
+            help: { type: "boolean", short: "h" }
+        },
+        allowPositionals: true
+    }));
 } catch (err) {
-  console.error(`ERROR: Unable to write markdown file: ${markdownPath}`);
-  process.exit(1);
+    console.error(`ERROR: ${err.message}`);
+    process.exit(1);
 }
 
+if (values.help) {
+    printHelp();
+    process.exit(0);
+}
 
+/* ============================================================
+ * Extract flags
+ * ============================================================ */
+
+const checkMode = values.check === true;
+const quiet = values.quiet === true;
+const recursivePath =
+    typeof values.recursive === "string" ? values.recursive : null;
+
+let targetFile = null;
+
+if (positionals.length > 1) {
+    console.error("ERROR: Only one file argument may be provided");
+    process.exit(1);
+}
+
+if (positionals.length === 1) {
+    targetFile = positionals[0];
+}
+
+/* ============================================================
+ * Contract validation
+ * ============================================================ */
+
+if (checkMode && !recursivePath && !targetFile) {
+    console.error("ERROR: --check requires a file or --recursive <path>");
+    process.exit(1);
+}
+
+if (recursivePath && targetFile) {
+    console.error("ERROR: Cannot use --recursive with a file argument");
+    process.exit(1);
+}
+
+/* ============================================================
+ * Helpers
+ * ============================================================ */
+
+function collectMarkdownFiles(dir) {
+    const results = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            results.push(...collectMarkdownFiles(full));
+        } else if (entry.isFile() && entry.name.endsWith(".md")) {
+            results.push(full);
+        }
+    }
+    return results;
+}
+
+function generateTOC(content) {
+    const hasStart = content.includes(START);
+    const hasEnd = content.includes(END);
+
+    if (!hasStart && !hasEnd) {
+        throw new Error("TOC delimiters not found");
+    }
+    if (hasStart && !hasEnd) {
+        throw new Error("TOC start delimiter found without end");
+    }
+    if (!hasStart && hasEnd) {
+        throw new Error("TOC end delimiter found without start");
+    }
+
+    const startIndex = content.indexOf(START);
+    const endIndex = content.indexOf(END);
+
+    const before = content.slice(0, startIndex + START.length);
+    const after = content.slice(endIndex);
+
+    const contentWithoutTOC =
+        content.slice(0, startIndex) +
+        content.slice(endIndex + END.length);
+
+    const lines = contentWithoutTOC.split("\n");
+    const headings = [];
+
+    for (const line of lines) {
+        const m = /^(#{1,6})\s+(.*)$/.exec(line);
+        if (!m) continue;
+
+        const level = m[1].length;
+        const title = m[2].trim();
+
+        const anchor = title
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, "")
+            .replace(/\s/g, "-")
+            .replace(/^-|-$/g, "");
+
+        headings.push({ level, title, anchor });
+    }
+
+    if (headings.length === 0) {
+        throw new Error("No headings found to generate TOC");
+    }
+
+    const minLevel = Math.min(...headings.map(h => h.level));
+    const tocLines = headings.map(h => {
+        const indent = "  ".repeat(h.level - minLevel);
+        return `${indent}- [${h.title}](#${h.anchor})`;
+    });
+
+    const tocBlock = "\n" + tocLines.join("\n") + "\n";
+    return before + tocBlock + after;
+}
+
+/* ============================================================
+ * File processing
+ * ============================================================ */
+
+function processFile(filePath) {
+    let content;
+    try {
+        content = fs.readFileSync(filePath, "utf8");
+    } catch {
+        throw new Error(`Unable to read markdown file: ${filePath}`);
+    }
+
+    let updated;
+    try {
+        updated = generateTOC(content);
+    } catch (err) {
+        throw err;
+    }
+
+    if (updated === content) {
+        return { changed: false };
+    }
+
+    if (checkMode) {
+        return { changed: true };
+    }
+
+    fs.writeFileSync(filePath, updated, "utf8");
+    return { changed: true };
+}
+
+/* ============================================================
+ * Execution
+ * ============================================================ */
+
+let files = [];
+
+if (recursivePath) {
+    const resolved = path.resolve(process.cwd(), recursivePath);
+
+    if (!fs.existsSync(resolved)) {
+        console.error("ERROR: Recursive path does not exist");
+        process.exit(1);
+    }
+    if (!fs.statSync(resolved).isDirectory()) {
+        console.error("ERROR: --recursive requires a directory");
+        process.exit(1);
+    }
+
+    files = collectMarkdownFiles(resolved);
+} else {
+    const resolved = path.resolve(
+        process.cwd(),
+        targetFile || "README.md"
+    );
+    files = [resolved];
+}
+
+let staleFound = false;
+
+for (const file of files) {
+    try {
+        const result = processFile(file);
+        if (checkMode && result.changed) {
+            staleFound = true;
+        }
+    } catch (err) {
+        console.error(`ERROR: ${err.message}`);
+        process.exit(1);
+    }
+}
+
+if (checkMode && staleFound) {
+    process.exit(1);
+}
+
+process.exit(0);
