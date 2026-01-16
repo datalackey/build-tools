@@ -42,8 +42,8 @@ Options:
   -r, --recursive <path-to-folder>          Recursively process all .md files under the given folder
   -v, --verbose                             Print status for every file processed
   -q, --quiet                               Suppress all non-error output
+  -d, --debug                               Print debug diagnostics to stderr
   -h, --help                                Show this help message and exit
-
 ```
 
 ## TOC Markers
@@ -75,7 +75,7 @@ Your `package.json` might look like this:
 ```json
 {
   "scripts": {
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
     "compile": "tsc -p tsconfig.json",
     "pretest": "npm run compile",
     "test": "jest",
