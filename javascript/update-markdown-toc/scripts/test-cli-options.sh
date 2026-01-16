@@ -62,7 +62,7 @@ if [[ "$STATUS" -ne 0 ]]; then
   exit 1
 fi
 
-if ! echo "$OUTPUT" | grep -q "update-readme-toc [options]"; then
+if ! echo "$OUTPUT" | grep -q "update-readme-toc \[options\]"; then
   echo "ERROR: --help output missing usage text"
   exit 1
 fi
@@ -109,7 +109,7 @@ echo "✔ --check requires explicit target"
 echo
 
 # ------------------------------------------------------------
-# --check success / failure
+# --check success / failure (exit code only)
 # ------------------------------------------------------------
 
 echo "→ --check passes for correct TOC"
@@ -133,39 +133,68 @@ echo "✔ stale TOC detected"
 echo
 
 # ------------------------------------------------------------
-# --check does not write or change timestamps
+# NEW: --check + --verbose output tests
 # ------------------------------------------------------------
 
-echo "→ --check does not modify file"
+echo "→ --check -v reports Stale and exits 1"
 
-ORIG_CONTENT="$(cat "$GOOD_MD")"
-ORIG_MTIME="$(stat -c %Y "$GOOD_MD")"
+set +e
+OUTPUT="$(cd "$ROOT" && node "$CLI" --check --verbose "$STALE_MD")"
+STATUS=$?
+set -e
 
-(cd "$ROOT" && node "$CLI" --check "$GOOD_MD")
-
-AFTER_CONTENT="$(cat "$GOOD_MD")"
-AFTER_MTIME="$(stat -c %Y "$GOOD_MD")"
-
-if [[ "$ORIG_CONTENT" != "$AFTER_CONTENT" ]]; then
-  echo "ERROR: --check modified file contents"
+if [[ "$STATUS" -ne 1 ]]; then
+  echo "ERROR: expected exit code 1 for stale TOC"
   exit 1
 fi
 
-if [[ "$ORIG_MTIME" != "$AFTER_MTIME" ]]; then
-  echo "ERROR: --check modified file timestamp"
+if [[ "$OUTPUT" != "Stale: $STALE_MD"$'\n' ]]; then
+  echo "ERROR: unexpected output"
+  echo "Expected: Stale: $STALE_MD"
+  echo "Actual:"
+  echo "$OUTPUT"
   exit 1
 fi
 
-echo "✔ --check left file unchanged"
+echo "✔ stale file reported correctly"
+echo
+
+echo "→ --check -v reports Up-to-date and exits 0"
+
+OUTPUT="$(cd "$ROOT" && node "$CLI" --check --verbose "$GOOD_MD")"
+STATUS=$?
+
+if [[ "$STATUS" -ne 0 ]]; then
+  echo "ERROR: expected exit code 0 for clean TOC"
+  exit 1
+fi
+
+if [[ "$OUTPUT" != "Up-to-date: $GOOD_MD"$'\n' ]]; then
+  echo "ERROR: unexpected output"
+  echo "Expected: Up-to-date: $GOOD_MD"
+  echo "Actual:"
+  echo "$OUTPUT"
+  exit 1
+fi
+
+echo "✔ clean file reported correctly"
 echo
 
 # ------------------------------------------------------------
-# --quiet suppresses output
+# NEW: --check + --quiet suppresses all output
 # ------------------------------------------------------------
 
-echo "→ --quiet suppresses output"
+echo "→ --check -q suppresses output"
 
-OUTPUT="$(cd "$ROOT" && node "$CLI" --check --quiet "$GOOD_MD")"
+set +e
+OUTPUT="$(cd "$ROOT" && node "$CLI" --check --quiet "$STALE_MD")"
+STATUS=$?
+set -e
+
+if [[ "$STATUS" -ne 1 ]]; then
+  echo "ERROR: expected exit code 1 for stale TOC"
+  exit 1
+fi
 
 if [[ -n "$OUTPUT" ]]; then
   echo "ERROR: --quiet produced output"
@@ -173,6 +202,23 @@ if [[ -n "$OUTPUT" ]]; then
 fi
 
 echo "✔ --quiet suppressed output"
+echo
+
+# ------------------------------------------------------------
+# NEW: Guard test — no Updated: in --check output
+# ------------------------------------------------------------
+
+echo "→ guard: --check never emits 'Updated:'"
+
+OUTPUT="$(cd "$ROOT" && node "$CLI" --check --verbose "$STALE_MD" 2>&1)"
+
+if echo "$OUTPUT" | grep -q "Updated:"; then
+  echo "ERROR: 'Updated:' appeared in --check output"
+  echo "$OUTPUT"
+  exit 1
+fi
+
+echo "✔ guard passed"
 echo
 
 # ------------------------------------------------------------
@@ -214,6 +260,6 @@ echo "✔ --recursive correctly rejected file path"
 echo
 
 echo "========================================"
-echo " ✅ CLI CONTRACT TESTS PASSED"
+echo " ✅ CLI CONTRACT TESTS PASSED
 echo "========================================"
 
