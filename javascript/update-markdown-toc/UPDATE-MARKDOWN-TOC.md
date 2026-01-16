@@ -36,10 +36,12 @@ npm install --save-dev @datalackey/update-readme-toc
 update-readme-toc [options] [file]
 
 Options:
-  --check     <path-to-file-or-folder>   Do not write files; exit non-zero if TOC is stale
-  --recursive <path-to-folder>           Recursively process all .md files under the given folder
-  -q, --quiet                            Suppress per-file output
-  -h, --help                             Show this help message and exit
+  -c, --check     <path-to-file-or-folder>  Do not write files; exit non-zero if TOC is stale
+  -r, --recursive <path-to-folder>          Recursively process all .md files under the given folder
+  -v, --verbose                             Print status for every file processed
+  -q, --quiet                               Suppress all non-error output
+  -h, --help                                Show this help message and exit
+
 ```
 
 ## TOC Markers

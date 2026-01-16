@@ -5,7 +5,6 @@ import path from "path";
 import { parseArgs } from "node:util";
 import { dedent } from "ts-dedent";
 
-
 /* ============================================================
  * Constants
  * ============================================================ */
@@ -22,16 +21,16 @@ function printHelp() {
     update-readme-toc [options] [file]
 
     Options:
-      --check     <path-to-file-or-folder>   Do not write files; exit non-zero if TOC is stale
-      --recursive <path-to-folder>           Recursively process all .md files under the given folder
-      -q, --quiet                            Suppress per-file output
-      -h, --help                             Show this help message and exit
+      -c, --check     <path-to-file-or-folder>  Do not write files; exit non-zero if TOC is stale
+      -r, --recursive <path-to-folder>          Recursively process all .md files under the given folder
+      -v, --verbose                             Print status for every file processed
+      -q, --quiet                               Suppress all non-error output
+      -h, --help                                Show this help message and exit
   `);
 }
 
-
 /* ============================================================
- * Argument parsing (Node built-in)
+ * Argument parsing
  * ============================================================ */
 
 let values, positionals;
@@ -39,10 +38,11 @@ let values, positionals;
 try {
     ({ values, positionals } = parseArgs({
         options: {
-            check: { type: "boolean" },
-            recursive: { type: "string" },
-            quiet: { type: "boolean", short: "q" },
-            help: { type: "boolean", short: "h" }
+            check:     { type: "boolean", short: "c" },
+            recursive:{ type: "string",  short: "r" },
+            verbose:  { type: "boolean", short: "v" },
+            quiet:    { type: "boolean", short: "q" },
+            help:     { type: "boolean", short: "h" }
         },
         allowPositionals: true
     }));
@@ -61,6 +61,7 @@ if (values.help) {
  * ============================================================ */
 
 const checkMode = values.check === true;
+const verbose = values.verbose === true;
 const quiet = values.quiet === true;
 const recursivePath =
     typeof values.recursive === "string" ? values.recursive : null;
@@ -79,6 +80,11 @@ if (positionals.length === 1) {
 /* ============================================================
  * Contract validation
  * ============================================================ */
+
+if (quiet && verbose) {
+    console.error("ERROR: --quiet and --verbose cannot be used together");
+    process.exit(1);
+}
 
 if (checkMode && !recursivePath && !targetFile) {
     console.error("ERROR: --check requires a file or --recursive <path>");
@@ -180,19 +186,22 @@ function processFile(filePath) {
     try {
         updated = generateTOC(content);
     } catch (err) {
+        if (err.message === "TOC delimiters not found") {
+            return { status: "skipped" };
+        }
         throw err;
     }
 
     if (updated === content) {
-        return { changed: false };
+        return { status: "unchanged" };
     }
 
     if (checkMode) {
-        return { changed: true };
+        return { status: "stale" };
     }
 
     fs.writeFileSync(filePath, updated, "utf8");
-    return { changed: true };
+    return { status: "updated" };
 }
 
 /* ============================================================
@@ -227,8 +236,23 @@ let staleFound = false;
 for (const file of files) {
     try {
         const result = processFile(file);
-        if (checkMode && result.changed) {
+
+        if (checkMode && result.status === "stale") {
             staleFound = true;
+        }
+
+        if (!quiet) {
+            if (verbose) {
+                if (result.status === "updated") {
+                    console.log(`Updated TOC: ${file}`);
+                } else if (result.status === "unchanged") {
+                    console.log(`TOC already up to date: ${file}`);
+                } else if (result.status === "skipped") {
+                    console.log(`Skipped (no TOC markers): ${file}`);
+                }
+            } else if (result.status === "updated") {
+                console.log(`Updated TOC: ${file}`);
+            }
         }
     } catch (err) {
         console.error(`ERROR: ${err.message}`);
