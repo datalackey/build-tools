@@ -5,6 +5,15 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CLI="$ROOT/bin/update-readme-toc.js"
 FIXTURES="$ROOT/test-fixtures"
 
+# Enable debug tracing if needed (off by default for CI)
+DEBUG_FLAG=""
+# DEBUG_FLAG="--debug"
+
+normalize_output() {
+  # Remove trailing newlines only
+  printf '%s' "$1" | sed -e ':a' -e '/\n$/{$d;N;ba}'
+}
+
 echo "========================================"
 echo " Running positive fixture tests"
 echo "========================================"
@@ -18,7 +27,7 @@ for dir in "$FIXTURES"/*; do
 
     cp "$README" "$README.tmp"
 
-    node "$CLI" "$README"
+    node "$CLI" $DEBUG_FLAG "$README" 2>/dev/null
 
     diff "$README" "$EXPECTED"
 
@@ -42,7 +51,7 @@ echo "========================================"
 MISSING_FILE="/tmp/not-there-file-$$.md"
 
 set +e
-OUTPUT="$(node "$CLI" "$MISSING_FILE" 2>&1)"
+OUTPUT="$(node "$CLI" $DEBUG_FLAG "$MISSING_FILE" 2>&1)"
 STATUS=$?
 set -e
 
@@ -79,7 +88,7 @@ cat > "$NO_TOC_FILE" <<'EOF'
 EOF
 
 set +e
-OUTPUT="$(node "$CLI" "$NO_TOC_FILE" 2>&1)"
+OUTPUT="$(node "$CLI" $DEBUG_FLAG "$NO_TOC_FILE" 2>&1)"
 STATUS=$?
 set -e
 
@@ -122,7 +131,7 @@ EOF
 chmod 000 "$UNREADABLE_FILE"
 
 set +e
-OUTPUT="$(node "$CLI" "$UNREADABLE_FILE" 2>&1)"
+OUTPUT="$(node "$CLI" $DEBUG_FLAG "$UNREADABLE_FILE" 2>&1)"
 STATUS=$?
 set -e
 
@@ -145,7 +154,5 @@ echo "✔ Unreadable file test passed"
 echo
 
 echo "========================================"
-echo " ✅ ALL TESTS PASSED"
+echo " ✅ ALL FIXTURE TESTS PASSED"
 echo "========================================"
-
-

@@ -13,6 +13,18 @@ const START = "<!-- TOC:START -->";
 const END = "<!-- TOC:END -->";
 
 /* ============================================================
+ * Debug helper
+ * ============================================================ */
+
+let debugEnabled = false;
+
+function debug(msg) {
+    if (debugEnabled) {
+        console.error(`[debug] ${msg}`);
+    }
+}
+
+/* ============================================================
  * Usage / Help
  * ============================================================ */
 
@@ -25,6 +37,7 @@ function printHelp() {
       -r, --recursive <path-to-folder>          Recursively process all .md files under the given folder
       -v, --verbose                             Print status for every file processed
       -q, --quiet                               Suppress all non-error output
+      -d, --debug                               Print debug diagnostics to stderr
       -h, --help                                Show this help message and exit
   `);
 }
@@ -38,18 +51,25 @@ let values, positionals;
 try {
     ({ values, positionals } = parseArgs({
         options: {
-            check:     { type: "boolean", short: "c" },
-            recursive:{ type: "string",  short: "r" },
-            verbose:  { type: "boolean", short: "v" },
-            quiet:    { type: "boolean", short: "q" },
-            help:     { type: "boolean", short: "h" }
+            check:      { type: "boolean", short: "c" },
+            recursive:  { type: "string",  short: "r" },
+            verbose:    { type: "boolean", short: "v" },
+            quiet:      { type: "boolean", short: "q" },
+            debug:      { type: "boolean", short: "d" },
+            help:       { type: "boolean", short: "h" }
         },
+        allowShort: true,
         allowPositionals: true
     }));
 } catch (err) {
     console.error(`ERROR: ${err.message}`);
     process.exit(1);
 }
+
+debugEnabled = values.debug === true;
+
+debug(`flags: check=${values.check} verbose=${values.verbose} quiet=${values.quiet} debug=${values.debug}`);
+debug(`positionals: ${JSON.stringify(positionals)}`);
 
 if (values.help) {
     printHelp();
@@ -76,6 +96,8 @@ if (positionals.length > 1) {
 if (positionals.length === 1) {
     targetFile = positionals[0];
 }
+
+debug(`mode: ${checkMode ? "check" : "write"}`);
 
 /* ============================================================
  * Contract validation
@@ -175,6 +197,8 @@ function generateTOC(content) {
  * ============================================================ */
 
 function processFile(filePath) {
+    debug(`processing file: ${filePath}`);
+
     let content;
     try {
         content = fs.readFileSync(filePath, "utf8");
@@ -187,21 +211,63 @@ function processFile(filePath) {
         updated = generateTOC(content);
     } catch (err) {
         if (err.message === "TOC delimiters not found") {
+            debug("result: skipped (no markers)");
             return { status: "skipped" };
         }
         throw err;
     }
 
     if (updated === content) {
+        debug("result: unchanged");
         return { status: "unchanged" };
     }
 
     if (checkMode) {
+        debug("result: stale");
         return { status: "stale" };
     }
 
     fs.writeFileSync(filePath, updated, "utf8");
+    debug("result: updated");
     return { status: "updated" };
+}
+
+/* ============================================================
+ * Output
+ * ============================================================ */
+
+function maybePrintStatus(status, filePath) {
+    debug(`printing decision: status=${status}`);
+
+    if (quiet) return;
+
+    if (checkMode) {
+        if (!verbose) return;
+
+        if (status === "stale") {
+            console.log(`Stale: ${filePath}`);
+        } else if (status === "unchanged") {
+            console.log(`Up-to-date: ${filePath}`);
+        } else if (status === "skipped") {
+            console.log(`Skipped (no markers): ${filePath}`);
+        }
+        return;
+    }
+
+    if (verbose) {
+        if (status === "updated") {
+            console.log(`Updated: ${filePath}`);
+        } else if (status === "unchanged") {
+            console.log(`Up-to-date: ${filePath}`);
+        } else if (status === "skipped") {
+            console.log(`Skipped (no markers): ${filePath}`);
+        }
+        return;
+    }
+
+    if (status === "updated") {
+        console.log(`Updated: ${filePath}`);
+    }
 }
 
 /* ============================================================
@@ -223,6 +289,7 @@ if (recursivePath) {
     }
 
     files = collectMarkdownFiles(resolved);
+    files.sort();
 } else {
     const resolved = path.resolve(
         process.cwd(),
@@ -239,21 +306,10 @@ for (const file of files) {
 
         if (checkMode && result.status === "stale") {
             staleFound = true;
+            debug("staleFound set true");
         }
 
-        if (!quiet) {
-            if (verbose) {
-                if (result.status === "updated") {
-                    console.log(`Updated TOC: ${file}`);
-                } else if (result.status === "unchanged") {
-                    console.log(`TOC already up to date: ${file}`);
-                } else if (result.status === "skipped") {
-                    console.log(`Skipped (no TOC markers): ${file}`);
-                }
-            } else if (result.status === "updated") {
-                console.log(`Updated TOC: ${file}`);
-            }
-        }
+        maybePrintStatus(result.status, file);
     } catch (err) {
         console.error(`ERROR: ${err.message}`);
         process.exit(1);
@@ -261,7 +317,9 @@ for (const file of files) {
 }
 
 if (checkMode && staleFound) {
+    debug("exiting with status 1 due to stale TOC");
     process.exit(1);
 }
 
+debug("exiting with status 0");
 process.exit(0);

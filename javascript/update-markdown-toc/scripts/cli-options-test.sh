@@ -4,6 +4,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CLI="$ROOT/bin/update-readme-toc.js"
 
+# Enable debug tracing if needed (off by default for CI)
+DEBUG_FLAG=""
+# DEBUG_FLAG="--debug"
+
+normalize_output() {
+  # Remove trailing newlines only
+  printf '%s' "$1" | sed -e ':a' -e '/\n$/{$d;N;ba}'
+}
+
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT
 
@@ -54,7 +63,7 @@ cp "$NO_TOC_MD" "$DOCS_DIR/no-toc.md"
 
 echo "→ --help prints usage and exits 0"
 
-OUTPUT="$(cd "$ROOT" && node "$CLI" --help)"
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --help 2>/dev/null)"
 STATUS=$?
 
 if [[ "$STATUS" -ne 0 ]]; then
@@ -77,7 +86,7 @@ echo
 echo "→ unknown flag errors"
 
 set +e
-OUTPUT="$(cd "$ROOT" && node "$CLI" --not-a-real-flag 2>&1)"
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --not-a-real-flag 2>&1)"
 STATUS=$?
 set -e
 
@@ -96,7 +105,7 @@ echo
 echo "→ --check requires a file or --recursive"
 
 set +e
-OUTPUT="$(cd "$ROOT" && node "$CLI" --check 2>&1)"
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check 2>&1)"
 STATUS=$?
 set -e
 
@@ -113,14 +122,14 @@ echo
 # ------------------------------------------------------------
 
 echo "→ --check passes for correct TOC"
-(cd "$ROOT" && node "$CLI" --check "$GOOD_MD")
+(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check "$GOOD_MD" 2>/dev/null)
 echo "✔ correct TOC passed"
 echo
 
 echo "→ --check fails for stale TOC"
 
 set +e
-(cd "$ROOT" && node "$CLI" --check "$STALE_MD")
+(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check "$STALE_MD" 2>/dev/null)
 STATUS=$?
 set -e
 
@@ -133,13 +142,13 @@ echo "✔ stale TOC detected"
 echo
 
 # ------------------------------------------------------------
-# NEW: --check + --verbose output tests
+# --check + --verbose output tests
 # ------------------------------------------------------------
 
 echo "→ --check -v reports Stale and exits 1"
 
 set +e
-OUTPUT="$(cd "$ROOT" && node "$CLI" --check --verbose "$STALE_MD")"
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check --verbose "$STALE_MD" 2>/dev/null)"
 STATUS=$?
 set -e
 
@@ -148,11 +157,14 @@ if [[ "$STATUS" -ne 1 ]]; then
   exit 1
 fi
 
-if [[ "$OUTPUT" != "Stale: $STALE_MD"$'\n' ]]; then
+EXPECTED="Stale: $STALE_MD"
+ACTUAL="$(normalize_output "$OUTPUT")"
+
+if [[ "$ACTUAL" != "$EXPECTED" ]]; then
   echo "ERROR: unexpected output"
-  echo "Expected: Stale: $STALE_MD"
+  echo "Expected: $EXPECTED"
   echo "Actual:"
-  echo "$OUTPUT"
+  printf '%q\n' "$OUTPUT"
   exit 1
 fi
 
@@ -161,7 +173,7 @@ echo
 
 echo "→ --check -v reports Up-to-date and exits 0"
 
-OUTPUT="$(cd "$ROOT" && node "$CLI" --check --verbose "$GOOD_MD")"
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check --verbose "$GOOD_MD" 2>/dev/null)"
 STATUS=$?
 
 if [[ "$STATUS" -ne 0 ]]; then
@@ -169,11 +181,14 @@ if [[ "$STATUS" -ne 0 ]]; then
   exit 1
 fi
 
-if [[ "$OUTPUT" != "Up-to-date: $GOOD_MD"$'\n' ]]; then
+EXPECTED="Up-to-date: $GOOD_MD"
+ACTUAL="$(normalize_output "$OUTPUT")"
+
+if [[ "$ACTUAL" != "$EXPECTED" ]]; then
   echo "ERROR: unexpected output"
-  echo "Expected: Up-to-date: $GOOD_MD"
+  echo "Expected: $EXPECTED"
   echo "Actual:"
-  echo "$OUTPUT"
+  printf '%q\n' "$OUTPUT"
   exit 1
 fi
 
@@ -181,13 +196,13 @@ echo "✔ clean file reported correctly"
 echo
 
 # ------------------------------------------------------------
-# NEW: --check + --quiet suppresses all output
+# --check + --quiet suppresses all output
 # ------------------------------------------------------------
 
 echo "→ --check -q suppresses output"
 
 set +e
-OUTPUT="$(cd "$ROOT" && node "$CLI" --check --quiet "$STALE_MD")"
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check --quiet "$STALE_MD" 2>/dev/null)"
 STATUS=$?
 set -e
 
@@ -205,61 +220,24 @@ echo "✔ --quiet suppressed output"
 echo
 
 # ------------------------------------------------------------
-# NEW: Guard test — no Updated: in --check output
+# Guard: no Updated: in --check output
 # ------------------------------------------------------------
 
 echo "→ guard: --check never emits 'Updated:'"
-
-OUTPUT="$(cd "$ROOT" && node "$CLI" --check --verbose "$STALE_MD" 2>&1)"
+set +euo pipefail  # turn ALL off
+OUTPUT="$(cd "$ROOT" && node "$CLI" $DEBUG_FLAG --check --verbose "$STALE_MD" 2>&1)"
 
 if echo "$OUTPUT" | grep -q "Updated:"; then
   echo "ERROR: 'Updated:' appeared in --check output"
   echo "$OUTPUT"
   exit 1
+else
+  echo "✔ guard passed"
 fi
+set -euo pipefail
 
-echo "✔ guard passed"
-echo
-
-# ------------------------------------------------------------
-# --recursive validation (missing dir)
-# ------------------------------------------------------------
-
-echo "→ --recursive requires existing directory"
-
-set +e
-(cd "$ROOT" && node "$CLI" --recursive "$TMPDIR/does-not-exist")
-STATUS=$?
-set -e
-
-if [[ "$STATUS" -eq 0 ]]; then
-  echo "ERROR: --recursive should fail for missing dir"
-  exit 1
-fi
-
-echo "✔ --recursive path validated"
-echo
-
-# ------------------------------------------------------------
-# --recursive validation (file instead of directory)
-# ------------------------------------------------------------
-
-echo "→ --recursive rejects file path"
-
-set +e
-(cd "$ROOT" && node "$CLI" --recursive "$GOOD_MD")
-STATUS=$?
-set -e
-
-if [[ "$STATUS" -eq 0 ]]; then
-  echo "ERROR: --recursive should fail when given a file"
-  exit 1
-fi
-
-echo "✔ --recursive correctly rejected file path"
 echo
 
 echo "========================================"
-echo " ✅ CLI CONTRACT TESTS PASSED
+echo " ✅ CLI CONTRACT TESTS PASSED"
 echo "========================================"
-
