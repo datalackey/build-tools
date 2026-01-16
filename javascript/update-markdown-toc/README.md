@@ -52,8 +52,8 @@ Content outside the markers is preserved verbatim.
 
 ### As Part of code/test/debug Work Flow  
 
-Before commit and push, you could run 'build' to ensure your code is built afresh, passes tests, and 
-your documentation TOCs are up to date.
+Before commit and push, you could, with the package.json below, type:  'npm run build' to ensure that your code is built afresh, it passes tests, and 
+that your documentation TOCs are up to date.
 
 Your `package.json` might look like this:
 ```json

@@ -8,15 +8,10 @@
     "update-readme-toc": "./bin/update-readme-toc.js"
   },
   "files": [
-    "bin/",
-    "llm/"
+    "bin/"
   ],
   "engines": {
     "node": ">=18"
-  },
-  "dependencies": {
-    "js-yaml": "^4.1.1",
-    "openai": "^6.16.0"
   },
   "keywords": [
     "build",
@@ -31,10 +26,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/datalackey/build-tools/javascript/update-markdown-toc.git"
+    "url": "https://github.com/datalackey/build-tools.git",
+    "directory": "javascript/update-markdown-toc"
   },
   "bugs": {
-    "url": "https://github.com/datalackey/build-tools/javascript/update-markdown-toc/issues"
+    "url": "https://github.com/datalackey/build-tools/issues"
   },
-  "homepage": "https://github.com/datalackey/build-tools/javascript/update-markdown-toc#readme"
+  "homepage": "https://github.com/datalackey/build-tools/tree/main/javascript/update-markdown-toc"
 }
+
