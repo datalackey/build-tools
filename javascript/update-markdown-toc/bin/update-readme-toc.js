@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { parseArgs } from "node:util";
-import dedent from "ts-dedent";
+import { dedent } from "ts-dedent";
 
 
 /* ============================================================

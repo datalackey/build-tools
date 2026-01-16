@@ -1,5 +1,15 @@
 # update-readme-toc
 
+
+- [update-readme-toc](#update-readme-toc)
+  - [Introduction](#introduction)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [TOC Markers](#toc-markers)
+  - [Usage Scenarios](#usage-scenarios)
+    - [As Part of code/test/debug Work Flow](#as-part-of-codetestdebug-work-flow)
+    - [Continuous Integration  (CI)](#continuous-integration--ci)
+
 ## Introduction
 
 A Node.js command-line **documentation helper** which automatically:
@@ -38,14 +48,6 @@ The tool operates only on files containing **both** markers:
 
 ```md
 <!-- TOC:START -->
-- [update-readme-toc](#update-readme-toc)
-  - [Introduction](#introduction)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [TOC Markers](#toc-markers)
-  - [Usage Scenarios](#usage-scenarios)
-    - [As Part of code/test/debug Work Flow](#as-part-of-codetestdebug-work-flow)
-    - [Continuous Integration  (CI)](#continuous-integration--ci)
 <!-- TOC:END -->
 ```
 
