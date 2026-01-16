@@ -1,7 +1,7 @@
 {
   "name": "@datalackey/update-readme-toc",
   "version": "0.1.1",
-  "description": "Generated Table of Contents for Mark down files using an LLM (CI-safe, prompt-driven)",
+  "description": "Auto-generate Table of Contents for a Markdown file (or files, recursively from a top level folder)",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -19,21 +19,22 @@
     "openai": "^6.16.0"
   },
   "keywords": [
+    "build",
+    "automation",
+    "javascript",
+    "node",
+    "documentation",
     "readme",
     "toc",
     "markdown",
-    "documentation",
-    "ci",
-    "automation",
-    "llm",
-    "openai"
+    "ci"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/datalackey/update-readme-toc.git"
+    "url": "https://github.com/datalackey/build-tools/javascript/update-markdown-toc.git"
   },
   "bugs": {
-    "url": "https://github.com/datalackey/update-readme-toc/issues"
+    "url": "https://github.com/datalackey/build-tools/javascript/update-markdown-toc/issues"
   },
-  "homepage": "https://github.com/datalackey/update-readme-toc#readme"
+  "homepage": "https://github.com/datalackey/build-tools/javascript/update-markdown-toc#readme"
 }

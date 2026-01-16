@@ -1,4 +1,0 @@
-# Missing TOC
-
-## Intro
-## Usage
