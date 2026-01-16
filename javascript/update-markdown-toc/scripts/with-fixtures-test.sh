@@ -60,7 +60,7 @@ if [[ "$STATUS" -eq 0 ]]; then
   exit 1
 fi
 
-if ! echo "$OUTPUT" | grep -q "Markdown file not found"; then
+if ! echo "$OUTPUT" | grep -q "Unable to read markdown file"; then
   echo "ERROR: Expected 'Markdown file not found' message"
   echo "Actual output:"
   echo "$OUTPUT"

@@ -196,7 +196,7 @@ function generateTOC(content) {
  * File processing
  * ============================================================ */
 
-function processFile(filePath) {
+function processFile(filePath, { isRecursive }) {
     debug(`processing file: ${filePath}`);
 
     let content;
@@ -211,8 +211,11 @@ function processFile(filePath) {
         updated = generateTOC(content);
     } catch (err) {
         if (err.message === "TOC delimiters not found") {
-            debug("result: skipped (no markers)");
-            return { status: "skipped" };
+            if (isRecursive) {
+                debug("result: skipped (no markers)");
+                return { status: "skipped" };
+            }
+            throw err; // single-file mode → hard error
         }
         throw err;
     }
@@ -275,6 +278,7 @@ function maybePrintStatus(status, filePath) {
  * ============================================================ */
 
 let files = [];
+let isRecursive = false;
 
 if (recursivePath) {
     const resolved = path.resolve(process.cwd(), recursivePath);
@@ -290,6 +294,7 @@ if (recursivePath) {
 
     files = collectMarkdownFiles(resolved);
     files.sort();
+    isRecursive = true;
 } else {
     const resolved = path.resolve(
         process.cwd(),
@@ -302,7 +307,7 @@ let staleFound = false;
 
 for (const file of files) {
     try {
-        const result = processFile(file);
+        const result = processFile(file, { isRecursive });
 
         if (checkMode && result.status === "stale") {
             staleFound = true;
