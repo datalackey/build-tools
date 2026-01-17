@@ -4,6 +4,10 @@
     - [Introduction](#introduction)
     - [Installation](#installation)
     - [Usage](#usage)
+        - [Using npx (recommended)](#using-npx-recommended)
+        - [Using npm scripts](#using-npm-scripts)
+        - [Using a direct path (advanced)](#using-a-direct-path-advanced)
+    - [Options](#options)
     - [TOC Markers](#toc-markers)
     - [Usage Scenarios](#usage-scenarios)
         - [As Part of code/test/debug Work Flow](#as-part-of-codetestdebug-work-flow)
@@ -11,6 +15,7 @@
         - [Recursively Traversing a Folder Hierarchy to Process all files vs. Single File Processing](#recursively-traversing-a-folder-hierarchy-to-process-all-files-vs-single-file-processing)
             - [Single-File Processing (Strict Mode)](#single-file-processing-strict-mode)
             - [Recursive Folder Traversal (Lenient Mode)](#recursive-folder-traversal-lenient-mode)
+    - [Guidelines For Project Contributors](#guidelines-for-project-contributors)
 
 ## Introduction
 
@@ -201,4 +206,6 @@ Updated: docs/guide.md
 Up-to-date: docs/api.md
 ```
 
+## Guidelines For Project Contributors
 
+Contributors to the project should consult [this document](GUIDELINES-FOR-PROJECT-CONTRIBUTORS.md)

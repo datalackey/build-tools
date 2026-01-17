@@ -17,7 +17,10 @@ echo "→ Running CLI contract tests"
 bash "$SCRIPTS/cli-options-test.sh"
 echo
 
+echo "→ Running recursive traversal tests"
+bash "$SCRIPTS/recursive-traversal-test.sh"
+echo
+
 echo "========================================"
 echo " ✅ ALL TESTS PASSED"
 echo "========================================"
-
