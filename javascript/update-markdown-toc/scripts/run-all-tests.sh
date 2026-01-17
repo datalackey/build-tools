@@ -5,15 +5,17 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SCRIPTS="$ROOT/scripts"
 
 # ------------------------------------------------------------
-# Parse driver-level verbosity
+# Parse driver-level tracing
 # ------------------------------------------------------------
 
-TEST_VERBOSE_FLAG=""
+# TEST_TRACE controls whether executed commands are printed.
+# It must never alter CLI behavior.
+TEST_TRACE_FLAG=""
 
 for arg in "$@"; do
   case "$arg" in
-    -v|--verbose)
-      TEST_VERBOSE_FLAG="--verbose"
+    --trace|--show-run)
+      TEST_TRACE_FLAG="--trace"
       ;;
   esac
 done
@@ -24,19 +26,19 @@ echo "========================================"
 echo
 
 echo "→ Running fixture tests"
-bash "$SCRIPTS/with-fixtures-test.sh" $TEST_VERBOSE_FLAG
+bash "$SCRIPTS/with-fixtures-test.sh" $TEST_TRACE_FLAG
 echo
 
 echo "→ Running CLI contract tests"
-bash "$SCRIPTS/cli-options-test.sh" $TEST_VERBOSE_FLAG
+bash "$SCRIPTS/cli-options-test.sh" $TEST_TRACE_FLAG
 echo
 
 echo "→ Running recursive traversal tests"
-bash "$SCRIPTS/recursive-traversal-test.sh" $TEST_VERBOSE_FLAG
+bash "$SCRIPTS/recursive-traversal-test.sh" $TEST_TRACE_FLAG
 echo
 
 echo "→ Running recursive leniency & continuation tests"
-bash "$SCRIPTS/recursive-leniency-and-continuation.test.sh" $TEST_VERBOSE_FLAG
+bash "$SCRIPTS/recursive-leniency-and-continuation.test.sh" $TEST_TRACE_FLAG
 echo
 
 echo "========================================"

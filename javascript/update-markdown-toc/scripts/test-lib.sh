@@ -5,12 +5,14 @@ set -Eeuo pipefail
 # Test-harness flags
 # ------------------------------------------------------------
 
-TEST_VERBOSE=false
+# TEST_TRACE controls whether the exact command being executed
+# is printed before it runs. This must NEVER affect CLI behavior.
+TEST_TRACE=false
 
 for arg in "$@"; do
   case "$arg" in
-    -v|--verbose)
-      TEST_VERBOSE=true
+    --trace|--show-run)
+      TEST_TRACE=true
       ;;
   esac
 done
@@ -41,7 +43,7 @@ trap on_error ERR
 run() {
   LAST_RUN_CMD="$*"
 
-  if $TEST_VERBOSE; then
+  if $TEST_TRACE; then
     echo "[run] $*" >&2
   fi
 
@@ -52,7 +54,7 @@ run() {
 run_capture() {
   LAST_RUN_CMD="$*"
 
-  if $TEST_VERBOSE; then
+  if $TEST_TRACE; then
     echo "[run] $*" >&2
   fi
 

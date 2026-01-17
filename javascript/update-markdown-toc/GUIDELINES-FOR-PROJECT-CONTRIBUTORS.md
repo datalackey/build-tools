@@ -36,21 +36,19 @@ You can invoke any test script directly, for example:
 bash scripts/recursive-traversal-test.sh
 ```
 
-### Verbose test mode (recommended when debugging)
+### Test trace mode (recommended when debugging)
 
-All test scripts accept a test-harness verbose flag (`-v` or `--verbose`), which prints the exact CLI command being executed before it runs:
+All recursive-mode test scripts accept a test-harness trace flag (`--trace` or `--show-run`), which prints the exact CLI command being executed before it runs. We may apply this to non-recursive tests in the future.
 
-```bash
-bash scripts/recursive-traversal-test.sh --verbose
-```
+This flag does not alter CLI behavior. To enable CLI verbosity or debugging, re-run the printed command manually with `--verbose` or `--debug`.
 
-Example output:
+Example output printed by the test harness:
 
 ```
 [run] node bin/update-readme-toc.js --verbose --recursive /tmp/tmp.XYZ/tree
 ```
 
-This verbosity is independent of the CLI’s own `--verbose` flag and exists purely to aid test debugging.
+This trace output exists purely to aid test debugging and is independent of the CLI’s own `--verbose` flag.
 
 ---
 
@@ -89,7 +87,9 @@ Edit `package.json` and bump the version following semver:
 Example:
 
 ```json
-"version": "0.1.2"
+{
+  "version": "0.1.2"
+}
 ```
 
 Commit the version bump:
@@ -121,4 +121,3 @@ Note: This package is intentionally published with no build step. The published 
 git tag v0.1.2
 git push origin v0.1.2
 ```
-
