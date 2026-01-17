@@ -50,6 +50,28 @@ run() {
   "$@"
 }
 
+run_expect_fail() {
+  # Record the command exactly like run/run_capture
+  LAST_RUN_CMD="$*"
+
+  if $TEST_TRACE; then
+    echo "[run] $*" >&2
+  fi
+
+  # Temporarily disable ERR trap and -e
+  trap - ERR
+  set +e
+
+  "$@"
+  local status=$?
+
+  # Restore strictness
+  set -e
+  trap on_error ERR
+
+  return $status
+}
+
 # Run a command and capture stdout *without* losing diagnostics
 run_capture() {
   LAST_RUN_CMD="$*"
@@ -83,4 +105,17 @@ strip_status() {
   sed -E 's/^(Updated|Up-to-date|Skipped \(no markers\)|Stale):\s+//'
 }
 
+
+make_tmpdir() {
+  local dir
+  dir="$(mktemp -d)"
+
+  if ! $TEST_TRACE; then
+    trap "rm -rf '$dir'" EXIT
+  else
+    echo "[trace] preserving temp dir: $dir" >&2
+  fi
+
+  echo "$dir"
+}
 

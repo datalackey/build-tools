@@ -41,6 +41,10 @@ echo "→ Running recursive leniency & continuation tests"
 bash "$SCRIPTS/recursive-leniency-and-continuation.test.sh" $TEST_TRACE_FLAG
 echo
 
+echo "→ Running recursive output matrix tests"
+bash "$SCRIPTS/recursive-output-matrix.test.sh" $TEST_TRACE_FLAG
+echo
+
 echo "========================================"
 echo " ✅ ALL TESTS PASSED"
 echo "========================================"
