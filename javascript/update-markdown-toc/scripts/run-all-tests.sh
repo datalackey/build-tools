@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SCRIPTS="$ROOT/scripts"
 
 echo "========================================"
-echo " Running update-readme-toc test suite"
+echo " Running update-markdown-toc test suite"
 echo "========================================"
 echo
 

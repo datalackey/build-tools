@@ -6,7 +6,7 @@ source "$(dirname "$0")/test-lib.sh"
 # ------------------------------------------------------------
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CLI="$ROOT/bin/update-readme-toc.js"
+CLI="$ROOT/bin/update-markdown-toc.js"
 
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT

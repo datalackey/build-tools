@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CLI="$ROOT/bin/update-readme-toc.js"
+CLI="$ROOT/bin/update-markdown-toc.js"
 FIXTURES="$ROOT/test-fixtures"
 
 # Enable debug tracing if needed (off by default for CI)

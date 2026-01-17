@@ -1,6 +1,6 @@
-# update-readme-toc
+# update-markdown-toc
 
-- [update-readme-toc](#update-readme-toc)
+- [update-markdown-toc](#update-markdown-toc)
     - [Introduction](#introduction)
     - [Installation](#installation)
     - [Usage](#usage)
@@ -30,10 +30,10 @@ Install as a development dependency (recommended):
 
 
 ```bash
-npm install --save-dev @datalackey/update-readme-toc
+npm install --save-dev @datalackey/update-markdown-toc
 ```
 
-This installs the update-readme-toc command into your project’s
+This installs the update-markdown-toc command into your project’s
 node_modules/.bin/ directory.
 
 
@@ -41,14 +41,14 @@ node_modules/.bin/ directory.
 ## Usage
 
 
-After installation, the `update-readme-toc` command can be invoked in any
+After installation, the `update-markdown-toc` command can be invoked in any
 of the following ways from the project root (or a subdirectory) where the package was installed.
 
 
 ### Using npx (recommended)
 
 ```bash
-npx update-readme-toc README.md
+npx update-markdown-toc README.md
 ````
 
 
@@ -59,7 +59,7 @@ You may also add a script entry to your package.json:
 ```json
 {
   "scripts": {
-    "docs:toc": "update-readme-toc README.md"
+    "docs:toc": "update-markdown-toc README.md"
   }
 }
 ```
@@ -72,7 +72,7 @@ npm run docs:toc
 ### Using a direct path (advanced)
 
 ```bash
-./node_modules/.bin/update-readme-toc README.md
+./node_modules/.bin/update-markdown-toc README.md
 ```
 
 
@@ -80,11 +80,11 @@ npm run docs:toc
 ## Options
 
 This section assumes the command is invoked using `npx`, an npm script,
-or another method that resolves the local `update-readme-toc` binary.
+or another method that resolves the local `update-markdown-toc` binary.
 
 
 ```text
-update-readme-toc [options] [file]
+update-markdown-toc [options] [file]
 
 Options:
   -c, --check     <path-to-file-or-folder>  Do not write files; exit non-zero if TOC is stale
@@ -117,8 +117,10 @@ Content outside the markers is preserved verbatim.
 
 ### As Part of code/test/debug Work Flow  
 
-Before commit and push, you could, with the package.json below, type:  'npm run build' to ensure that your code is built afresh, it passes tests, and 
-that your documentation TOCs are up to date.
+To ensure that your code is built afresh, passes tests, and that your documentation TOCs are up to date, you could 
+use invoke the tool in something akin to the package.json below. 
+Before commit and push, you would type:  'npm run build' 
+
 
 Your `package.json` might look like this:
 ```json
@@ -128,7 +130,7 @@ Your `package.json` might look like this:
     "compile": "tsc -p tsconfig.json",
     "pretest": "npm run compile",
     "test": "jest",
-    "docs:toc": "update-readme-toc --recursive docs/",
+    "docs:toc": "update-markdown-toc --recursive docs/",
     "bundle": "esbuild src/index.ts --bundle --platform=node --outdir=dist",
     "package": "npm run clean && npm run compile && npm run bundle",
     "build": "npm run docs:toc && npm run test && npm run package"
@@ -150,7 +152,7 @@ In this mode, the tool:
 Example: 
 
 ```bash
-npx update-readme-toc --check --recursive docs/
+npx update-markdown-toc --check --recursive docs/
 ```
 
 
@@ -189,7 +191,7 @@ In this mode, files without TOC markers are silently skipped, and files with TOC
 
 When combined with --verbose, skipped files are reported explicitly in this mode.
 
-update-readme-toc --recursive docs/ --verbose
+update-markdown-toc --recursive docs/ --verbose
 
 Example output:
 

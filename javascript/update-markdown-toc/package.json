@@ -1,11 +1,11 @@
 {
-  "name": "@datalackey/update-readme-toc",
+  "name": "@datalackey/update-markdown-toc",
   "version": "0.1.1",
   "description": "Auto-generate Table of Contents for a Markdown file (or files, recursively from a top level folder)",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "update-readme-toc": "./bin/update-readme-toc.js"
+    "update-markdown-toc": "./bin/update-markdown-toc.js"
   },
   "files": [
     "bin/"

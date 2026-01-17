@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CLI="$ROOT/bin/update-readme-toc.js"
+CLI="$ROOT/bin/update-markdown-toc.js"
 
 # Enable debug tracing if needed (off by default for CI)
 DEBUG_FLAG=""
@@ -71,7 +71,7 @@ if [[ "$STATUS" -ne 0 ]]; then
   exit 1
 fi
 
-if ! echo "$OUTPUT" | grep -q "update-readme-toc \[options\]"; then
+if ! echo "$OUTPUT" | grep -q "update-markdown-toc \[options\]"; then
   echo "ERROR: --help output missing usage text"
   exit 1
 fi

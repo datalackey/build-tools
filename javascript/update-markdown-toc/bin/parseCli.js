@@ -80,7 +80,7 @@ export function parseCli() {
 
 function printHelp() {
     console.log(dedent`
-    update-readme-toc [options] [file]
+    update-markdown-toc [options] [file]
 
     Options:
       -c, --check     <path-to-file-or-folder>  Do not write files; exit non-zero if TOC is stale
