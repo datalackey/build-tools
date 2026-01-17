@@ -1,26 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
-# ------------------------------------------------------------
-# Test-harness flags
-# ------------------------------------------------------------
-
-TEST_VERBOSE=false
-
-for arg in "$@"; do
-  case "$arg" in
-    -v|--verbose)
-      TEST_VERBOSE=true
-      ;;
-  esac
-done
-
-run() {
-  if $TEST_VERBOSE; then
-    echo "[run] $*"
-  fi
-  "$@"
-}
+source "$(dirname "$0")/test-lib.sh"
 
 # ------------------------------------------------------------
 # Setup
@@ -32,22 +11,6 @@ CLI="$ROOT/bin/update-readme-toc.js"
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT
 
-normalize() {
-  if [[ $# -gt 0 ]]; then
-    printf '%s' "$1"
-  else
-    cat
-  fi | sed -e ':a' -e '/\n$/{$d;N;ba}'
-}
-
-filter_run_lines() {
-  grep -v '^\[run\] '
-}
-
-strip_status() {
-  sed -E 's/^(Updated|Up-to-date|Skipped \(no markers\)):\s+//'
-}
-
 echo "========================================"
 echo " Recursive traversal tests"
 echo "========================================"
@@ -55,6 +18,17 @@ echo
 
 # ------------------------------------------------------------
 # Fixture layout
+#
+# tree/
+# ├── a.md                (has TOC)
+# ├── z.txt               (non-md, ignored)
+# ├── empty-dir/          (empty)
+# ├── sub/
+# │   ├── b.md            (has TOC)
+# │   ├── c.md            (no TOC)
+# │   └── note.txt        (ignored)
+# └── sub2/
+#     └── d.md            (has TOC)
 # ------------------------------------------------------------
 
 TREE="$TMPDIR/tree"
@@ -120,6 +94,11 @@ EOF
 
 if [[ "$ACTUAL" != "$EXPECTED_ORDER" ]]; then
   echo "ERROR: traversal output mismatch"
+  echo "Expected:"
+  echo "$EXPECTED_ORDER"
+  echo
+  echo "Actual:"
+  echo "$ACTUAL"
   exit 1
 fi
 
@@ -136,10 +115,11 @@ RAW_OUTPUT2="$(
   run node "$CLI" --verbose --recursive "$TREE" 2>/dev/null
 )"
 
-PATHS_ONLY="$(printf '%s\n' "$RAW_OUTPUT2" \
-  | filter_run_lines \
-  | strip_status \
-  | normalize
+PATHS_ONLY="$(
+  printf '%s\n' "$RAW_OUTPUT2" \
+    | filter_run_lines \
+    | strip_status \
+    | normalize
 )"
 
 EXPECTED_PATH_ORDER=$(
@@ -195,4 +175,5 @@ echo
 echo "========================================"
 echo " ✅ RECURSIVE TRAVERSAL TESTS PASSED"
 echo "========================================"
+
 

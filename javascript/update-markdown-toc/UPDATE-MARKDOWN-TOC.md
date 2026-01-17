@@ -26,13 +26,62 @@ A Node.js command-line **documentation helper** which automatically:
 
 ## Installation
 
-Install from npm (recommended)
+Install as a development dependency (recommended):
+
 
 ```bash
 npm install --save-dev @datalackey/update-readme-toc
 ```
 
+This installs the update-readme-toc command into your project’s
+node_modules/.bin/ directory.
+
+
+
 ## Usage
+
+
+After installation, the `update-readme-toc` command can be invoked in any
+of the following ways from the project root (or a subdirectory) where the package was installed.
+
+
+### Using npx (recommended)
+
+```bash
+npx update-readme-toc README.md
+````
+
+
+### Using npm scripts
+
+You may also add a script entry to your package.json:
+
+```json
+{
+  "scripts": {
+    "docs:toc": "update-readme-toc README.md"
+  }
+}
+```
+Then run:
+
+```bash
+npm run docs:toc
+```
+
+### Using a direct path (advanced)
+
+```bash
+./node_modules/.bin/update-readme-toc README.md
+```
+
+
+
+## Options
+
+This section assumes the command is invoked using `npx`, an npm script,
+or another method that resolves the local `update-readme-toc` binary.
+
 
 ```text
 update-readme-toc [options] [file]
