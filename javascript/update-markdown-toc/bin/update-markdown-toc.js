@@ -165,15 +165,29 @@ function maybePrintStatus(status, filePath) {
     if (quiet) return;
 
     if (checkMode) {
-        if (!verbose) return;
-
+        // In --check mode we ALWAYS report stale files (unless --quiet).
+        // This makes CI output actionable without requiring --verbose.
         if (status === "stale") {
             console.log(`Stale: ${filePath}`);
-        } else if (status === "unchanged") {
-            console.log(`Up-to-date: ${filePath}`);
-        } else if (status === "skipped") {
-            console.log(`Skipped (no markers): ${filePath}`);
+            return;
         }
+
+        // In recursive mode, files without markers are intentionally ignored.
+        // They should not cause failures and do not need reporting by default.
+        if (status === "skipped") {
+            if (verbose) {
+                console.log(`Skipped (no markers): ${filePath}`);
+            }
+            return;
+        }
+
+        if (status === "unchanged") {
+            if (verbose) {
+                console.log(`Up-to-date: ${filePath}`);
+            }
+            return;
+        }
+
         return;
     }
 
@@ -192,6 +206,7 @@ function maybePrintStatus(status, filePath) {
         console.log(`Updated: ${filePath}`);
     }
 }
+
 
 /* ============================================================
  * Execution
