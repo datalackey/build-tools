@@ -77,7 +77,7 @@ echo "note"  > "$TREE/sub/note.txt"
 echo "→ traverses nested directories and finds all .md files"
 
 RAW_OUTPUT="$(
-  run node "$CLI" --verbose --recursive "$TREE" 2>/dev/null
+  run_capture node "$CLI" --verbose --recursive "$TREE" 2>/dev/null
 )"
 
 OUTPUT="$(printf '%s\n' "$RAW_OUTPUT" | filter_run_lines)"
@@ -112,7 +112,7 @@ echo
 echo "→ traversal order is deterministic and path-sorted"
 
 RAW_OUTPUT2="$(
-  run node "$CLI" --verbose --recursive "$TREE" 2>/dev/null
+  run_capture node "$CLI" --verbose --recursive "$TREE" 2>/dev/null
 )"
 
 PATHS_ONLY="$(
