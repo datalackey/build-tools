@@ -30,6 +30,7 @@ A Node.js command-line **documentation helper** which automatically:
 - avoids gratuitous reformatting or changes of any kind outside of regions marked by the aforementioned [TOC markers](#toc-markers)
 - avoids updating files when the generated TOC is already correct
 - provides a `--check` mode which flags Markdown files with stale TOCs (intended for CI)
+- generates TOC links with GitHub’s Markdown renderer.
 
 
 

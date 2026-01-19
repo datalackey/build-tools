@@ -7,7 +7,7 @@ FIXTURES="$ROOT/test-fixtures"
 
 # Enable debug tracing if needed (off by default for CI)
 DEBUG_FLAG=""
-# DEBUG_FLAG="--debug"
+#DEBUG_FLAG="--debug"
 
 normalize_output() {
   # Remove trailing newlines only
