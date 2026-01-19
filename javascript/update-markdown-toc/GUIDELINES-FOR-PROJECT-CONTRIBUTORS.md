@@ -2,6 +2,12 @@
 
 
 <!-- TOC:START -->
+- [Guidelines for Project Contributors](#guidelines-for-project-contributors)
+  - [Running Tests](#running-tests)
+    - [Run the full test suite](#run-the-full-test-suite)
+    - [Run a single test suite](#run-a-single-test-suite)
+    - [Test trace mode (recommended when debugging)](#test-trace-mode-recommended-when-debugging)
+  - [Releasing a New Version to npm](#releasing-a-new-version-to-npm)
 <!-- TOC:END -->
 
 
