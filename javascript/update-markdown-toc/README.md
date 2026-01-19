@@ -1,5 +1,6 @@
 # update-markdown-toc
 
+<!-- TOC:START -->
 - [update-markdown-toc](#update-markdown-toc)
     - [Introduction](#introduction)
     - [Installation](#installation)
@@ -16,6 +17,7 @@
             - [Single-File Processing (Strict Mode)](#single-file-processing-strict-mode)
             - [Recursive Folder Traversal (Lenient Mode)](#recursive-folder-traversal-lenient-mode)
     - [Guidelines For Project Contributors](#guidelines-for-project-contributors)
+<!-- TOC:END -->
 
 ## Introduction
 
@@ -23,7 +25,8 @@ A Node.js command-line **documentation helper** which automatically:
 
 - generates Table of Contents (TOC) blocks for Markdown files
 - operates on either a single file, or recursively finds all `*.md` files from a root path
-- regenerates TOCs from headings, replacing only explicitly marked regions, with no gratuitous reformatting
+- regenerates TOCs from headings, targeting only regions explicitly marked with [TOC markers](#toc-markers)
+- avoids gratuitous reformatting or changes of any kind outside of regions marked by the aforementioned [TOC markers](#toc-markers)
 - avoids updating files when the generated TOC is already correct
 - provides a `--check` mode which flags Markdown files with stale TOCs (intended for CI)
 
@@ -102,21 +105,26 @@ Options:
 
 ## TOC Markers
 
-The tool operates only on files containing **both** markers:
+The tool operates only on files containing **both** start and end markers,
+as *almost* shown below.  Don't use these markers exactly as written. Use brackets ('<' and '>'), and not
+squiggley braces   (i.e., not '{' and '}').  The reason for this documentation 
+oddity is that, if we used brackets,
+then when we run our tool against this code base we would end up getting an unwanted table of contents below !
+
 
 ```md
-<!-- TOC:START -->
-<!-- TOC:END -->
+{!-- TOC:START --}
+{!-- TOC:END --}
 ```
 
-Any existing content between these markers is lost. The new content will be the generated TOC that
+Any existing content between the region start and end markers is lost. The new content will be the generated TOC that
 reflects the section headers marked with '#'s in the Markdown document.
  
 Content outside the markers is preserved verbatim.
+If either marker is missing, the tool prints an error message and exits with a non-zero status code.
 
 
 ## Usage Scenarios 
-
 
 
 
@@ -143,9 +151,9 @@ Your `package.json` might look like this:
 }
 ```
 
-### Continuous Integration  (CI)
+### Continuous Integration  
 
-The --check flag is designed primarily for continuous integration.
+The --check flag is designed primarily for continuous integration (CI).
 
 In this mode, the tool:
 
@@ -175,14 +183,21 @@ In the case of the latter mode, we assume some files may not yet have TOC marker
 
 #### Single-File Processing (Strict Mode)
 
-When a single Markdown file is explicitly specified (or when the default README.md is used), the tool operates in strict mode.
 
-In this mode:
+When a single Markdown file is explicitly specified (or when the default README.md is used), 
+the tool operates in strict mode.
+In this mode, any of the following conditions cause an immediate error and a non-zero exit code:
 
-The file must contain both TOC markers:
+- file does not exist, or cannot be read (e.g. due to permissions).
+- file does not contain both TOC delimiters (<!-- TOC:START --> and <!-- TOC:END -->).
+- file is stale (i.e. the existing TOC differs from the generated TOC). 
+-  file contains TOC delimiters but no Markdown headings are found from which a TOC can be generated.
+
+
+
 ```md
-<!-- TOC:START -->
-<!-- TOC:END -->
+{!-- TOC:START --}
+{!-- TOC:END --}
 
 ```
 
@@ -193,12 +208,19 @@ If either marker is missing, the tool prints an error message and exits with a n
 
 When operating in recursive mode, the tool traverses a directory tree and processes all *.md files it finds.
 In this mode, files without TOC markers are silently skipped, and files with TOC markers are processed normally.
+(Rational: for larger repos, it may not be feasible to add TOC markers to every Markdown file at once.)
+Stale files are reported (unless --quiet is specified) and will 
+result in a non-zero return value at the end of processing, but the 
+script will not immediately bail wiht an error -- processing continues for all files found.
 
-When combined with --verbose, skipped files are reported explicitly in this mode.
+When combined with --verbose, skipped files (Markdown files without start/end region markers) 
+are reported explicitly in this mode. For example: 
 
+```bash
 update-markdown-toc --recursive docs/ --verbose
+```
 
-Example output:
+yields example output:
 
 ```
 Skipped (no markers): docs/legacy-notes.md
