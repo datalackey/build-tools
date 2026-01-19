@@ -3,6 +3,7 @@
 <!-- TOC:START -->
 - [update-markdown-toc](#update-markdown-toc)
   - [Introduction](#introduction)
+  - [Why not Some Other Markdown TOC Generator ?](#why-not-some-other-markdown-toc-generator)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Using npx (recommended)](#using-npx-recommended)
@@ -29,6 +30,17 @@ A Node.js command-line **documentation helper** which automatically:
 - avoids gratuitous reformatting or changes of any kind outside of regions marked by the aforementioned [TOC markers](#toc-markers)
 - avoids updating files when the generated TOC is already correct
 - provides a `--check` mode which flags Markdown files with stale TOCs (intended for CI)
+
+
+
+## Why not Some Other Markdown TOC Generator ?
+
+Most Markdown TOC tools (e.g., [markdown-toc](https://github.com/jonschlinkert/markdown-toc), 
+[md-toc-cli](https://github.com/eugene-khyst/md-toc-cli))
+operate on a **single file at a time**, a mode which our tool also supports.
+But we are aware of no other alternative which supports our tool's main distinguishing feature: 
+the ability to search for, check and update all Markdown documents within an entire folder hierarchy.
+
 
 
 
@@ -102,6 +114,10 @@ Options:
   -d, --debug                               Print debug diagnostics to stderr
   -h, --help                                Show this help message and exit
 ```
+
+When using --check, a target file or a recursive folder must be specified
+explicitly. Unlike normal operation, --check does not default to README.md.
+
 
 ## TOC Markers
 
@@ -184,7 +200,7 @@ In the case of the latter mode, we assume some files may not yet have TOC marker
 #### Single-File Processing (Strict Mode)
 
 
-When a single Markdown file is explicitly specified (or when the default README.md is used), 
+When a single Markdown file is explicitly specified (or when the default README.md is used and --check not specified), 
 the tool operates in strict mode.
 In this mode, any of the following conditions cause an immediate error and a non-zero exit code:
 

@@ -89,5 +89,9 @@ function printHelp() {
       -q, --quiet                               Suppress all non-error output
       -d, --debug                               Print debug diagnostics to stderr
       -h, --help                                Show this help message and exit
+      
+      When using --check, a target file or a recursive folder must be specified
+      explicitly. Unlike normal operation, --check does not default to README.md.
+
   `);
 }
