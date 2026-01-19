@@ -3,6 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { parseCli } from "./parseCli.js";
+import GithubSlugger from "github-slugger";
 
 /* ============================================================
  * Constants
@@ -82,8 +83,9 @@ function generateTOC(content) {
     const lines = contentWithoutTOC.split("\n");
     const headings = [];
 
-    // NEW: track seen anchors for disambiguation
-    const seenAnchors = new Map();
+    // Use github-slugger to produce GitHub-compatible heading IDs.
+    // Instantiate per-file so duplicate disambiguation resets for each document.
+    const slugger = new GithubSlugger();
 
     for (const line of lines) {
         const m = /^(#{1,6})\s+(.*)$/.exec(line);
@@ -92,17 +94,7 @@ function generateTOC(content) {
         const level = m[1].length;
         const title = m[2].trim();
 
-        const baseAnchor = title
-            .toLowerCase()
-            .replace(/[^\w\s-]/g, "")   // remove punctuation
-            .replace(/\s/g, "-")        // spaces → hyphens
-            .replace(/^-+/g, "");       // trim leading hyphens only
-
-        const count = seenAnchors.get(baseAnchor) ?? 0;
-        seenAnchors.set(baseAnchor, count + 1);
-
-        const anchor =
-            count === 0 ? baseAnchor : `${baseAnchor}-${count}`;
+        const anchor = slugger.slug(title);
 
         headings.push({ level, title, anchor });
     }

@@ -4,7 +4,7 @@
 - [Unicode Example](#unicode-example)
   - [Café](#café)
   - [naïve approach](#naïve-approach)
-  - [Pokémon?](#pokémon-)
+  - [Pokémon?](#pokémon)
 <!-- TOC:END -->
 
 ## Café
