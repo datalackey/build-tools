@@ -49,6 +49,10 @@ echo "→ Running CRLF line ending tests"
 bash "$SCRIPTS/crlf-line-endings.test.sh" $TEST_TRACE_FLAG
 echo
 
+echo "→ Running idempotency tests"
+bash "$SCRIPTS/idempotency.test.sh" $TEST_TRACE_FLAG
+echo
+
 echo "========================================"
 echo " ✅ ALL TESTS PASSED"
 echo "========================================"
