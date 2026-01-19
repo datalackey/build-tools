@@ -189,17 +189,11 @@ the tool operates in strict mode.
 In this mode, any of the following conditions cause an immediate error and a non-zero exit code:
 
 - file does not exist, or cannot be read (e.g. due to permissions).
-- file does not contain both TOC delimiters (<!-- TOC:START --> and <!-- TOC:END -->).
+- file does not contain both TOC delimiters ({!-- TOC:START --} and {!-- TOC:END --}). 
+  (See [TOC markers](#toc-markers) section about how we describe markers in this guide.)
 - file is stale (i.e. the existing TOC differs from the generated TOC). 
--  file contains TOC delimiters but no Markdown headings are found from which a TOC can be generated.
+- file contains TOC delimiters but no Markdown headings are found from which a TOC can be generated.
 
-
-
-```md
-{!-- TOC:START --}
-{!-- TOC:END --}
-
-```
 
 If either marker is missing, the tool prints an error message and exits with a non-zero status code.
 
