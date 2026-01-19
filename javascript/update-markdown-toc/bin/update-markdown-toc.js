@@ -91,9 +91,9 @@ function generateTOC(content) {
 
         const anchor = title
             .toLowerCase()
-            .replace(/[^\w\s-]/g, "")
-            .replace(/\s/g, "-")
-            .replace(/^-|-$/g, "");
+            .replace(/[^\w\s-]/g, "")   // remove punctuation
+            .replace(/\s/g, "-")        // spaces → hyphens
+            .replace(/^-+/g, "");       // FIX: trim leading hyphens ONLY
 
         headings.push({ level, title, anchor });
     }
@@ -135,7 +135,7 @@ function processFile(filePath) {
                 debugLog("result: skipped (no markers)");
                 return { status: "skipped" };
             }
-            throw err; // single-file mode → hard error
+            throw err;
         }
         throw err;
     }
@@ -165,15 +165,11 @@ function maybePrintStatus(status, filePath) {
     if (quiet) return;
 
     if (checkMode) {
-        // In --check mode we ALWAYS report stale files (unless --quiet).
-        // This makes CI output actionable without requiring --verbose.
         if (status === "stale") {
             console.log(`Stale: ${filePath}`);
             return;
         }
 
-        // In recursive mode, files without markers are intentionally ignored.
-        // They should not cause failures and do not need reporting by default.
         if (status === "skipped") {
             if (verbose) {
                 console.log(`Skipped (no markers): ${filePath}`);
@@ -207,7 +203,6 @@ function maybePrintStatus(status, filePath) {
     }
 }
 
-
 /* ============================================================
  * Execution
  * ============================================================ */
@@ -227,7 +222,7 @@ if (recursivePath) {
     }
 
     files = collectMarkdownFiles(resolved);
-    files.sort(); // deterministic order
+    files.sort();
 } else {
     const resolved = path.resolve(
         process.cwd(),

@@ -18,20 +18,39 @@ echo "========================================"
 echo " Running positive fixture tests"
 echo "========================================"
 
+cleanup_fixture() {
+  if [[ -f "$README.tmp" ]]; then
+    mv "$README.tmp" "$README"
+  fi
+}
+
 for dir in "$FIXTURES"/*; do
   README="$dir/README.md"
   EXPECTED="$dir/expected.md"
 
   if [[ -f "$EXPECTED" ]]; then
-    echo "→ Testing fixture: $(basename "$dir")"
+    FIXTURE_NAME="$(basename "$dir")"
+    echo "→ Testing fixture: $FIXTURE_NAME"
 
     cp "$README" "$README.tmp"
 
+    # Always restore README on exit from this iteration
+    trap cleanup_fixture EXIT
+
     node "$CLI" $DEBUG_FLAG "$README" 2>/dev/null
 
-    diff "$README" "$EXPECTED"
+    if ! diff "$README" "$EXPECTED"; then
+      echo
+      echo "✖ FIXTURE FAILED: $FIXTURE_NAME"
+      echo "----------------------------------------"
+      diff "$README" "$EXPECTED"
+      echo "----------------------------------------"
+      exit 1
+    fi
 
-    mv "$README.tmp" "$README"
+    # Success path cleanup
+    cleanup_fixture
+    trap - EXIT
   else
     echo "→ Skipping $(basename "$dir") (no expected.md)"
   fi
@@ -61,7 +80,7 @@ if [[ "$STATUS" -eq 0 ]]; then
 fi
 
 if ! echo "$OUTPUT" | grep -q "Unable to read markdown file"; then
-  echo "ERROR: Expected 'Markdown file not found' message"
+  echo "ERROR: Expected 'Unable to read markdown file' message"
   echo "Actual output:"
   echo "$OUTPUT"
   exit 1
@@ -156,3 +175,4 @@ echo
 echo "========================================"
 echo " ✅ ALL FIXTURE TESTS PASSED"
 echo "========================================"
+

@@ -3,7 +3,7 @@
 <!-- TOC:START -->
 - [update-markdown-toc](#update-markdown-toc)
   - [Introduction](#introduction)
-  - [Why not Some Other Markdown TOC Generator ?](#why-not-some-other-markdown-toc-generator)
+  - [Why not Some Other Markdown TOC Generator ?](#why-not-some-other-markdown-toc-generator-)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Using npx (recommended)](#using-npx-recommended)
