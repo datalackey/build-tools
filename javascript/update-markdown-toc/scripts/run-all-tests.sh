@@ -45,6 +45,10 @@ echo "→ Running recursive output matrix tests"
 bash "$SCRIPTS/recursive-output-matrix.test.sh" $TEST_TRACE_FLAG
 echo
 
+echo "→ Running CRLF line ending tests"
+bash "$SCRIPTS/crlf-line-endings.test.sh" $TEST_TRACE_FLAG
+echo
+
 echo "========================================"
 echo " ✅ ALL TESTS PASSED"
 echo "========================================"

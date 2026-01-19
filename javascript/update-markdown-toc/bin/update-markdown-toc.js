@@ -40,6 +40,10 @@ function debugLog(msg) {
  * Helpers
  * ============================================================ */
 
+function detectLineEnding(text) {
+    return text.includes("\r\n") ? "\r\n" : "\n";
+}
+
 function collectMarkdownFiles(dir) {
     const results = [];
 
@@ -57,6 +61,8 @@ function collectMarkdownFiles(dir) {
 }
 
 function generateTOC(content) {
+    const lineEnding = detectLineEnding(content);
+
     const hasStart = content.includes(START);
     const hasEnd   = content.includes(END);
 
@@ -73,18 +79,18 @@ function generateTOC(content) {
     const startIndex = content.indexOf(START);
     const endIndex   = content.indexOf(END);
 
-    const before = content.slice(0, startIndex + START.length);
-    const after  = content.slice(endIndex);
+    const before = content.slice(0, startIndex);
+    const after  = content.slice(endIndex + END.length);
 
+    // Preserve exactly one line boundary for parsing
     const contentWithoutTOC =
-        content.slice(0, startIndex) +
-        content.slice(endIndex + END.length);
+        before.replace(/\s*$/, "") +
+        lineEnding +
+        after.replace(/^\s*/, "");
 
-    const lines = contentWithoutTOC.split("\n");
+    const lines = contentWithoutTOC.split(lineEnding);
     const headings = [];
 
-    // Use github-slugger to produce GitHub-compatible heading IDs.
-    // Instantiate per-file so duplicate disambiguation resets for each document.
     const slugger = new GithubSlugger();
 
     for (const line of lines) {
@@ -93,7 +99,6 @@ function generateTOC(content) {
 
         const level = m[1].length;
         const title = m[2].trim();
-
         const anchor = slugger.slug(title);
 
         headings.push({ level, title, anchor });
@@ -109,9 +114,21 @@ function generateTOC(content) {
         return `${indent}- [${h.title}](#${h.anchor})`;
     });
 
-    const tocBlock = "\n" + tocLines.join("\n") + "\n";
-    return before + tocBlock + after;
+    const tocBlock =
+        lineEnding +
+        tocLines.join(lineEnding) +
+        lineEnding;
+
+    return (
+        before +
+        START +
+        tocBlock +
+        END +
+        after
+    );
 }
+
+
 
 /* ============================================================
  * File processing
