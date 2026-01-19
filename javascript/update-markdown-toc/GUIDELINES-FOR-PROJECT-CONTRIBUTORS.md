@@ -68,9 +68,10 @@ git status
 
 There should be no uncommitted changes.
 
-2. Run the full test suite
+2. Run the full test suite, assuming you are in root folder, do the following:
 
 ```bash
+cd javascript/update-markdown-toc 
 bash scripts/run-all-tests.sh
 ```
 
