@@ -1,6 +1,6 @@
 {
   "name": "@datalackey/update-markdown-toc",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Auto-generate Table of Contents for a Markdown file (or files, recursively from a top level folder)",
   "license": "MIT",
   "type": "module",

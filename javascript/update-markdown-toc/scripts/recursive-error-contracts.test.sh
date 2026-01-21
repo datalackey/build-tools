@@ -129,6 +129,52 @@ fi
 echo "✔ recursive + file argument rejected"
 echo
 
+# ------------------------------------------------------------
+# Case 5: mismatched TOC markers report absolute file path
+# ------------------------------------------------------------
+
+echo "→ recursive run reports absolute path for mismatched TOC markers"
+
+BAD_MD="$TMPDIR/bad.md"
+
+cat > "$BAD_MD" <<'EOF'
+# Bad
+
+<!-- TOC:START -->
+
+## Section
+EOF
+
+OUTPUT="$(node "$CLI" --recursive "$TMPDIR" 2>&1)"
+STATUS=$?
+
+if [[ "$STATUS" -eq 0 ]]; then
+  echo "ERROR: expected non-zero exit for mismatched TOC markers"
+  exit 1
+fi
+
+ABS_BAD_MD="$(cd / && realpath "$BAD_MD")"
+
+if ! echo "$OUTPUT" | grep -q "^ERROR: $ABS_BAD_MD:"; then
+  echo "ERROR: expected absolute file path in error message"
+  echo "Expected prefix:"
+  echo "ERROR: $ABS_BAD_MD:"
+  echo "Actual output:"
+  echo "$OUTPUT"
+  exit 1
+fi
+
+if ! echo "$OUTPUT" | grep -q "TOC start delimiter found without end"; then
+  echo "ERROR: expected delimiter mismatch message"
+  echo "Actual output:"
+  echo "$OUTPUT"
+  exit 1
+fi
+
+echo "✔ mismatched TOC marker path reported"
+echo
+
 echo "========================================"
 echo " ✅ RECURSIVE ERROR CONTRACT TESTS PASSED"
 echo "========================================"
+

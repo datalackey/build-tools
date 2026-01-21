@@ -128,8 +128,6 @@ function generateTOC(content) {
     );
 }
 
-
-
 /* ============================================================
  * File processing
  * ============================================================ */
@@ -141,7 +139,8 @@ function processFile(filePath) {
     try {
         content = fs.readFileSync(filePath, "utf8");
     } catch {
-        throw new Error(`Unable to read markdown file: ${filePath}`);
+        const absolutePath = path.resolve(filePath);
+        throw new Error(`Unable to read markdown file: ${absolutePath}`);
     }
 
     let updated;
@@ -153,9 +152,10 @@ function processFile(filePath) {
                 debugLog("result: skipped (no markers)");
                 return { status: "skipped" };
             }
-            throw err;
         }
-        throw err;
+
+        const absolutePath = path.resolve(filePath);
+        throw new Error(`${absolutePath}: ${err.message}`);
     }
 
     if (updated === content) {
