@@ -1,10 +1,18 @@
 # update-markdown-toc
 
+<p align="center">
+  <img
+    src="doc/demo.gif"
+    width="720"
+    alt="update-markdown-toc demo">
+</p>
+
+
+
 <!-- TOC:START -->
 - [update-markdown-toc](#update-markdown-toc)
   - [Introduction](#introduction)
   - [Why not Some Other Markdown TOC Generator ?](#why-not-some-other-markdown-toc-generator-)
-  - [A Quick Demo](#a-quick-demo)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Using npx (recommended)](#using-npx-recommended)
@@ -42,11 +50,6 @@ Most Markdown TOC tools (e.g., [markdown-toc](https://github.com/jonschlinkert/m
 operate on a **single file at a time**, a mode which our tool also supports.
 But we are aware of no other alternative which supports our tool's main distinguishing feature: 
 the ability to search for, check and update all Markdown documents within an entire folder hierarchy.
-
-## A Quick Demo
-
-[Here](doc/demo.gif) are some of the things the utility can do.
-
 
 ## Installation
 
