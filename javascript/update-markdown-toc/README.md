@@ -45,11 +45,13 @@ A Node.js command-line **documentation helper** which automatically:
 
 ## Why not Some Other Markdown TOC Generator ?
 
-Most Markdown TOC tools (e.g., [markdown-toc](https://github.com/jonschlinkert/markdown-toc), 
+Most Markdown TOC tools  (e.g., [markdown-toc](https://github.com/jonschlinkert/markdown-toc), 
 [md-toc-cli](https://github.com/eugene-khyst/md-toc-cli))
-operate on a **single file at a time**, a mode which our tool also supports.
-But we are aware of no other alternative which supports our tool's main distinguishing feature: 
-the ability to search for, check and update all Markdown documents within an entire folder hierarchy.
+operate on a single file at a time, a mode which we also support.
+The primary distinguishing feature of our tool is its ability to recursively search for, check, and update all Markdown documents within an entire folder hierarchy, making it suitable for CI and 
+large repositories.
+
+
 
 ## Installation
 
