@@ -332,3 +332,5 @@ trigger a publish via Changesets), see [CONTRIBUTING.md](../docs/CONTRIBUTING.md
 ## License
 
 MIT
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

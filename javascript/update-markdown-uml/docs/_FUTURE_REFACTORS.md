@@ -105,3 +105,5 @@ Benefits of consolidation:
 
 1. **tsuml2 vs ts-morph** — resolved: `ts-morph` is used for all diagram
    generation. `tsuml2` was removed from dependencies.
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

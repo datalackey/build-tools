@@ -32,3 +32,5 @@ Code sessions against a spec file.
 
 ---
 
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

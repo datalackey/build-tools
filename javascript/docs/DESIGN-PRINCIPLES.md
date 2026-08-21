@@ -239,3 +239,5 @@ that difficulty is usually a property of the source structure, not the tool.
 See [DOCS_AS_ACTIVE_INFRASTRUCTURE.md](./DOCS_AS_ACTIVE_INFRASTRUCTURE.md) for a full
 treatment of this principle and the specific signals each tool surfaces.
 
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

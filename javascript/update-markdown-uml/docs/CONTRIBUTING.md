@@ -116,3 +116,5 @@ classDiagram
 <!-- UML:component-details:END -->
 
 
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

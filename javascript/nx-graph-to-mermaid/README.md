@@ -464,3 +464,5 @@ trigger a publish via Changesets), see
 # License
 
 MIT
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

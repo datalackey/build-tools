@@ -340,3 +340,5 @@ For code overview, development setup, build workflow, and release procedures (in
 trigger a publish via Changesets), see
 [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

@@ -216,3 +216,5 @@ human-readable findings. Start the file with:
 
 No line limit. Include all findings with full file paths and line numbers.
 This is the artifact a human reads; do not compress it.
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

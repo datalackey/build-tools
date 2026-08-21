@@ -95,3 +95,5 @@ Run 'npx nx run build-tools-workspace:update-all-format' in workspace route to a
 ## Current work
 
 State the current task in your first message — no need to maintain this section between sessions.
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

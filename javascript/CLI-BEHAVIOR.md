@@ -292,3 +292,5 @@ npx nx run build-tools-workspace:update:toc --args="--help"
 ```
 
 This applies to any CLI flag intended for the tool itself rather than NX.
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

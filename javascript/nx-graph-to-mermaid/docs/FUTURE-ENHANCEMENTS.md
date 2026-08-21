@@ -74,3 +74,5 @@ A future CLI would simply call `buildMermaid()` directly.
 ---
 
 
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

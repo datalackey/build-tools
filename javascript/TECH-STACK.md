@@ -160,3 +160,5 @@ required. The `dependsOn` on the workspace-level lint aggregator is therefore
 redundant and could be removed. It is retained for now to avoid an unforced
 change, but should be cleaned up in a future pass.
 
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

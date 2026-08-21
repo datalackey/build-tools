@@ -114,3 +114,5 @@ Example output printed by the test harness:
 This trace output exists purely to aid test debugging and is independent of the CLI’s own `--verbose` flag.
 
 
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

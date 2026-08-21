@@ -10,3 +10,5 @@ For workspace-level setup, build pipeline, and release workflow see:
 ---
 
 *Package-specific contributor documentation coming soon.*
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

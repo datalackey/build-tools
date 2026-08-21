@@ -378,3 +378,5 @@ This package is one component of a small ecosystem of JavaScript tooling plugins
 maintained as individual npm packages in this repository. The versioning and release
 of these packages is governed by a coordinated release policy, and the packages adhere
 to common design and architectural principles described [here](../README.md).
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

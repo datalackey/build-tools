@@ -146,3 +146,5 @@ For detailed documentation of shared command-line behavior, see:
 
 ➡️ **[Common CLI Behavior](./CLI-BEHAVIOR.md)**
 
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

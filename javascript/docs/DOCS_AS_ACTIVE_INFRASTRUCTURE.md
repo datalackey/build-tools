@@ -297,3 +297,5 @@ documentation maintenance effort.
 *This document describes the philosophy behind the tools in this workspace. For the tools
 themselves, see the individual package READMEs. For day-to-day development workflows, see
 [CONTRIBUTING.md](./CONTRIBUTING.md).*
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

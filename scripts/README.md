@@ -77,3 +77,5 @@ cd ../lights-out-<branch> && git log --oneline -5 && git status -s
 
 The script prints next steps: review the diff against `main`, push the branch, and remove the
 worktree once you're done with it (`git worktree remove ../lights-out-<branch>`).
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

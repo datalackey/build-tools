@@ -235,3 +235,5 @@ human-readable findings for this package. Start the file with:
 
 No line limit. Include all findings with full file paths and line numbers.
 This is the artifact a human reads; do not compress it.
+
+[![Remember the USS Liberty!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

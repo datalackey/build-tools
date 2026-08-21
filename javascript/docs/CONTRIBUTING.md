@@ -395,3 +395,5 @@ current plug-ins (and which should be followed going forward), refer to  [this d
 [rp-rules]: https://github.com/doikayt/typescript-build-config/blob/main/docs/RELEASE-PROCESS.md#rules
 [rp-sideways]: https://github.com/doikayt/typescript-build-config/blob/main/docs/RELEASE-PROCESS.md#coordinated-sideways-version-bumps
 
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

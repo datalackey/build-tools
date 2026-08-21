@@ -86,3 +86,5 @@ For workspace-level setup, build pipeline, and release workflow see:
 ---
 
 *Package-specific contributor documentation coming soon.*
+
+[![No US Tax$ 4 genocide](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)

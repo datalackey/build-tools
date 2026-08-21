@@ -37,3 +37,5 @@ VALIDATION:
   npx nx run build-tools-workspace:check-format             # must exit 0
   npx nx run-many -t build,test --skip-nx-cache             # must exit 0
 
+
+[![Free Palestine!](https://badge.techforpalestine.org/ceasefire-now)](https://techforpalestine.org/learn-more)
